@@ -1,4 +1,3 @@
-import pygame
 import random
 
 Mots_facile = ["nuit", "jour", "haut", "petit", "lune"]
@@ -21,39 +20,60 @@ def melanger_mots(mots):
     return "".join(lettres)
 
 def devine():
-    niveau = "oui"  
-    victoire = 0
+    niveau = "oui"
+    score = 0
     print("Bienvenue dans le jeu de scrabble 4.1 !")
-
-    while niveau is not None:  
+    
+    while niveau is not None:
         mots_choisis = choisir_mots(niveau)
         mots_melanges = melanger_mots(mots_choisis)
         print("Voici les lettres mélangées :")
         print(mots_melanges)
         mots_devinés = []
+        
+        # Points gagnés par bonne réponse en fonction du niveau
+        if niveau == "oui":
+            points_par_mot = 1
+        elif niveau == "moyen":
+            points_par_mot = 2
+        else:
+            points_par_mot = 3
 
         while len(mots_devinés) < len(mots_choisis):
-            choix = input("Devinez un mot parmi les mots affichés : ").strip().lower()
+            choix = input("Devinez un mot parmi les lettres affichées ou tapez 'next' pour passer au niveau suivant : ").strip().lower()
+            
             if choix in mots_choisis and choix not in mots_devinés:
                 mots_devinés.append(choix)
-                print(f"Bien joué ! Vous avez trouvé : {choix}")
+                score += points_par_mot
+                print(f"Bien deviné ! Votre score est maintenant : {score}")
+            elif choix == "next":
+                print("Vous avez choisi de passer au niveau suivant sans terminer. Votre score sera divisé par 2.")
+                score /= 2  # Pénalité pour passer le niveau
+                break
             else:
-                print("Ce mot n'est pas dans la liste ou a déjà été deviné.")
+                score -= 1
+                print("Mot incorrect ou déjà deviné. Score actuel :", score)
+            
             mots_affiches = [mot if mot in mots_devinés else "_" for mot in mots_choisis]
             print("État actuel des mots trouvés :", " ".join(mots_affiches))
-
-        victoire += 1  
-        print("Félicitations ! Vous avez deviné tous les mots :", ", ".join(mots_choisis))
-
-    
+        
+        # Passer au niveau suivant après avoir deviné tous les mots
         if niveau == "oui":
             niveau = "moyen"
         elif niveau == "moyen":
             niveau = "difficile"
         else:
-            niveau = None
-    print(" G G t'as tout finis")
+            niveau = None  # Terminer le jeu si tous les niveaux sont terminés
 
-    
+    print("Bravo ! Le jeu est terminé.")
+    print("Score final :", int(score))
+
+print("Bienvenue dans le jeu du scrabble :\n"
+      "En mode facile, vous gagnerez 1 point par bonne réponse.\n"
+      "En mode moyen, vous gagnerez 2 points par bonne réponse.\n"
+      "En mode difficile, vous gagnerez 3 points par bonne réponse.\n"
+      "Cependant, soyez attentif, chaque mauvaise réponse vous fera perdre 1 point. \n"
+      "Vous avez la possibilité de passer un niveau en contrepartie, votre score sera divisé par deux.")
 niveau = input("Souhaitez-vous lancer une partie ? (oui/non) : ").strip().lower()
-devine()
+if niveau == "oui":
+    devine()
